@@ -1,0 +1,64 @@
+{
+  "name": "control-de-contratos",
+  "productName": "Control de Contratos",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "electron.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build:client": "tsc && vite build",
+    "build:server": "tsc -p tsconfig.server.json",
+    "build": "npm run build:client && npm run build:server",
+    "preview": "vite preview",
+    "server": "tsx watch src/server/index.ts",
+    "electron:start": "npm run build && electron .",
+    "dist": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder",
+    "start": "concurrently \"npm run server\" \"npm run dev\""
+  },
+  "dependencies": {
+    "@obras-modular/reporters": "file:../obras-modular/packages/reporters",
+    "cors": "^2.8.5",
+    "electron-updater": "^6.6.2",
+    "exceljs": "^4.3.0",
+    "express": "^4.17.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^7.0.0",
+    "cross-env": "^7.0.3",
+    "electron": "^31.0.2",
+    "electron-builder": "^24.13.3",
+    "tsx": "^4.7.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0",
+    "xlsx": "^0.18.5"
+  },
+  "build": {
+    "appId": "com.ipemyc.controldecontratos",
+    "productName": "Control de Contratos",
+    "files": [
+      "dist/**/*",
+      "dist-server/**/*",
+      "electron.cjs",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    }
+  }
+}

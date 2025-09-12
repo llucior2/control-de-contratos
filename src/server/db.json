@@ -1,0 +1,219 @@
+{
+  "clientes": [
+    {
+      "id": 1,
+      "nombre": "Cliente 10",
+      "rfc": "a6as4da672",
+      "direccion": "calle 7",
+      "contactoPrincipal": {
+        "nombre": "yo 7",
+        "telefono": 12334445572,
+        "email": "ooeidjs@hdfggr.com"
+      }
+    },
+    {
+      "id": 2,
+      "nombre": "Cliente 11",
+      "rfc": "a6as4da673",
+      "direccion": "calle 8",
+      "contactoPrincipal": {
+        "nombre": "yo 8",
+        "telefono": 12334445573,
+        "email": "qwjwjs@hdfggr.com"
+      }
+    },
+    {
+      "nombre": "Cliente 4",
+      "rfc": "a6as4da666",
+      "direccion": "calle 1",
+      "contactoPrincipal": {
+        "nombre": "yo 1",
+        "telefono": 12334445566,
+        "email": "lkj@hdfggr.com"
+      },
+      "id": 3
+    },
+    {
+      "nombre": "Cliente 5",
+      "rfc": "a6as4da667",
+      "direccion": "calle 2",
+      "contactoPrincipal": {
+        "nombre": "yo 2",
+        "telefono": 12334445567,
+        "email": "ldskj@hdfggr.com"
+      },
+      "id": 4
+    },
+    {
+      "nombre": "Cliente 6",
+      "rfc": "a6as4da668",
+      "direccion": "calle 3",
+      "contactoPrincipal": {
+        "nombre": "yo 3",
+        "telefono": 12334445568,
+        "email": "lkiwiij@hdfggr.com"
+      },
+      "id": 5
+    },
+    {
+      "nombre": "Cliente 7",
+      "rfc": "a6as4da669",
+      "direccion": "calle 4",
+      "contactoPrincipal": {
+        "nombre": "yo 4",
+        "telefono": 12334445569,
+        "email": "lsososj@hdfggr.com"
+      },
+      "id": 6
+    },
+    {
+      "nombre": "Cliente 8",
+      "rfc": "a6as4da670",
+      "direccion": "calle 5",
+      "contactoPrincipal": {
+        "nombre": "yo 5",
+        "telefono": 12334445570,
+        "email": "lppaos@hdfggr.com"
+      },
+      "id": 7
+    },
+    {
+      "nombre": "Cliente 9",
+      "rfc": "a6as4da671",
+      "direccion": "calle 6",
+      "contactoPrincipal": {
+        "nombre": "yo 6",
+        "telefono": 12334445571,
+        "email": "jjeniks@hdfggr.com"
+      },
+      "id": 8
+    },
+    {
+      "nombre": "Cliente 10",
+      "rfc": "a6as4da672",
+      "direccion": "calle 7",
+      "contactoPrincipal": {
+        "nombre": "yo 7",
+        "telefono": 12334445572,
+        "email": "ooeidjs@hdfggr.com"
+      },
+      "id": 9
+    },
+    {
+      "nombre": "Cliente 11",
+      "rfc": "a6as4da673",
+      "direccion": "calle 8",
+      "contactoPrincipal": {
+        "nombre": "yo 8",
+        "telefono": 12334445573,
+        "email": "qwjwjs@hdfggr.com"
+      },
+      "id": 10
+    }
+  ],
+  "contratos": [
+    {
+      "id": 1,
+      "clienteId": 10,
+      "nombreProyecto": "Proyecto 5",
+      "folio": "CBS52215",
+      "objeto": "Tablaroca",
+      "monto": 88855449,
+      "moneda": "MXN",
+      "tipoDeCambio": 1,
+      "fechaInicio": "2025-08-26",
+      "fechaTermino": "2025-08-30",
+      "tipoContrato": "Precio Unitario",
+      "tipoIVA": "IVA 16%",
+      "anticipoPorcentaje": 30,
+      "fondoGarantiaPorcentaje": 5,
+      "estatus": "Vigente"
+    },
+    {
+      "clienteId": 4,
+      "nombreProyecto": "Proyecto 1",
+      "folio": "CBS52211",
+      "objeto": "Pintura",
+      "monto": 88855446,
+      "moneda": "MXN",
+      "tipoDeCambio": 1,
+      "fechaInicio": "2025-08-29",
+      "fechaTermino": "2025-09-06",
+      "tipoContrato": "Precio Unitario",
+      "tipoIVA": "IVA 16%",
+      "anticipoPorcentaje": 30,
+      "fondoGarantiaPorcentaje": 5,
+      "estatus": "Vigente",
+      "id": 2
+    },
+    {
+      "clienteId": "000d0d1d1d2",
+      "nombreProyecto": "Proyecto 2",
+      "folio": "CBS52212",
+      "objeto": "Tablaroca",
+      "monto": 88855446,
+      "moneda": "MXN",
+      "tipoDeCambio": 1,
+      "fechaInicio": "",
+      "fechaTermino": "",
+      "tipoContrato": "Precio Unitario",
+      "tipoIVA": "IVA 16%",
+      "anticipoPorcentaje": 30,
+      "fondoGarantiaPorcentaje": 5,
+      "estatus": "Vigente",
+      "id": 3
+    },
+    {
+      "clienteId": "000d0d1d1d3",
+      "nombreProyecto": "Proyecto 3",
+      "folio": "CBS52213",
+      "objeto": "Tablaroca",
+      "monto": 88855447,
+      "moneda": "MXN",
+      "tipoDeCambio": 1,
+      "fechaInicio": "",
+      "fechaTermino": "",
+      "tipoContrato": "Precio Unitario",
+      "tipoIVA": "IVA 16%",
+      "anticipoPorcentaje": 30,
+      "fondoGarantiaPorcentaje": 5,
+      "estatus": "Vigente",
+      "id": 4
+    },
+    {
+      "clienteId": "000d0d1d1d4",
+      "nombreProyecto": "Proyecto 4",
+      "folio": "CBS52214",
+      "objeto": "Tablaroca",
+      "monto": 88855448,
+      "moneda": "MXN",
+      "tipoDeCambio": 1,
+      "fechaInicio": "",
+      "fechaTermino": "",
+      "tipoContrato": "Precio Unitario",
+      "tipoIVA": "IVA 16%",
+      "anticipoPorcentaje": 30,
+      "fondoGarantiaPorcentaje": 5,
+      "estatus": "Vigente",
+      "id": 5
+    },
+    {
+      "clienteId": "000d0d1d1d5",
+      "nombreProyecto": "Proyecto 5",
+      "folio": "CBS52215",
+      "objeto": "Tablaroca",
+      "monto": 88855449,
+      "moneda": "MXN",
+      "tipoDeCambio": 1,
+      "fechaInicio": "",
+      "fechaTermino": "",
+      "tipoContrato": "Precio Unitario",
+      "tipoIVA": "IVA 16%",
+      "anticipoPorcentaje": 30,
+      "fondoGarantiaPorcentaje": 5,
+      "estatus": "Vigente",
+      "id": 6
+    }
+  ],
+  "ordenesDeCambio": []
+}
