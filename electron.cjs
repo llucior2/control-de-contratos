@@ -1,4 +1,5 @@
 const { app, BrowserWindow } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const { fork } = require('child_process');
 
@@ -46,6 +47,7 @@ function startServer() {
 app.on('ready', () => {
   startServer();
   createWindow();
+  autoUpdater.checkForUpdatesAndNotify();
 });
 
 app.on('window-all-closed', () => {
