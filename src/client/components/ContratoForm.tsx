@@ -11,7 +11,13 @@ const tipoContratoOptions: TipoContrato[] = [
   'Orden de Compra'
 ];
 
-const ContratoForm = ({ clientes, onContratoAdded }: { clientes: Cliente[], onContratoAdded: () => void }) => {
+interface ContratoFormProps {
+  clientes: Cliente[];
+  onContratoAdded: () => void;
+  razonSocialId: number | null; // New prop
+}
+
+const ContratoForm = ({ clientes, onContratoAdded, razonSocialId }: ContratoFormProps) => {
   // State for all form fields
   const [clienteId, setClienteId] = useState<number | string>('');
   const [nombreProyecto, setNombreProyecto] = useState('');
@@ -36,6 +42,11 @@ const ContratoForm = ({ clientes, onContratoAdded }: { clientes: Cliente[], onCo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!razonSocialId) {
+      alert('Debe seleccionar una Razón Social para agregar un contrato.');
+      return;
+    }
+
     if (new Date(fechaTermino) < new Date(fechaInicio)) {
       alert('La fecha de término no puede ser anterior a la fecha de inicio.');
       return;
@@ -43,14 +54,15 @@ const ContratoForm = ({ clientes, onContratoAdded }: { clientes: Cliente[], onCo
 
     const newContrato = {
       clienteId: Number(clienteId),
+      razonSocialId, // Added razonSocialId
       nombreProyecto, folio, objeto,
-      monto: Number(monto),
+      monto: parseFloat(String(monto)) || 0,
       moneda, 
-      tipoDeCambio: moneda === 'USD' ? Number(tipoDeCambio) : undefined,
+      tipoDeCambio: moneda === 'USD' ? parseFloat(String(tipoDeCambio)) || 0 : undefined,
       fechaInicio, fechaTermino, tipoContrato, tipoIVA,
-      anticipoPorcentaje: Number(anticipoPorcentaje),
-      fondoGarantiaPorcentaje: Number(fondoGarantiaPorcentaje),
-      montoAnticipoOtorgado: (Number(monto) * (Number(anticipoPorcentaje) / 100)),
+      anticipoPorcentaje: parseFloat(String(anticipoPorcentaje)) || 0,
+      fondoGarantiaPorcentaje: parseFloat(String(fondoGarantiaPorcentaje)) || 0,
+      montoAnticipoOtorgado: ((parseFloat(String(monto)) || 0) * ((parseFloat(String(anticipoPorcentaje)) || 0) / 100)),
       estatus,
     };
 
@@ -61,9 +73,20 @@ const ContratoForm = ({ clientes, onContratoAdded }: { clientes: Cliente[], onCo
     });
 
     // Reset form could be more comprehensive
+    setClienteId('');
     setNombreProyecto('');
     setFolio('');
+    setObjeto('');
     setMonto('');
+    setMoneda('MXN');
+    setTipoDeCambio('');
+    setFechaInicio('');
+    setFechaTermino('');
+    setTipoContrato('Precio Unitario');
+    setTipoIVA('IVA 16%');
+    setAnticipoPorcentaje(0);
+    setFondoGarantiaPorcentaje(5);
+    setEstatus('Vigente');
 
     onContratoAdded();
   };
