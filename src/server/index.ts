@@ -4,7 +4,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { Database, Cliente, Contrato } from '../types.js';
+import { Database, Cliente, Contrato, Factura, Pago, RazonSocial } from '../types.js';
 import { generateExcel, ReportData } from '@obras-modular/reporters';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,11 +23,12 @@ const userDataPath = process.argv[2] || null;
 const dbPath = userDataPath ? path.join(userDataPath, 'db.json') : path.join(__dirname, '..', '..', 'data', 'db.json');
 
 const readDb = async (): Promise<Database> => {
+  const defaultDb: Database = { razonesSociales: [], clientes: [], contratos: [], ordenesDeCambio: [], facturas: [], pagos: [] };
   try {
     const data = await fs.readFile(dbPath, 'utf-8');
-    return JSON.parse(data);
+    const existingDb = JSON.parse(data);
+    return { ...defaultDb, ...existingDb };
   } catch (error) {
-    const defaultDb: Database = { clientes: [], contratos: [], ordenesDeCambio: [] };
     await fs.writeFile(dbPath, JSON.stringify(defaultDb, null, 2));
     return defaultDb;
   }
@@ -37,6 +38,44 @@ const writeDb = async (db: Database) => {
   await fs.writeFile(dbPath, JSON.stringify(db, null, 2));
 };
 
+// --- Razones Sociales Endpoints ---
+app.get('/api/razonesSociales', async (req, res) => {
+  const db = await readDb();
+  res.json(db.razonesSociales);
+});
+
+app.post('/api/razonesSociales', async (req, res) => {
+  const db = await readDb();
+  const newRazonSocial: RazonSocial = {
+    id: db.razonesSociales.length > 0 ? Math.max(...db.razonesSociales.map(rs => rs.id)) + 1 : 1,
+    ...req.body,
+  };
+  db.razonesSociales.push(newRazonSocial);
+  await writeDb(db);
+  res.status(201).json(newRazonSocial);
+});
+
+app.put('/api/razonesSociales/:id', async (req, res) => {
+  const db = await readDb();
+  const id = parseInt(req.params.id, 10);
+  const index = db.razonesSociales.findIndex(rs => rs.id === id);
+  if (index === -1) {
+    return res.status(404).json({ message: 'Razón Social no encontrada' });
+  }
+  db.razonesSociales[index] = { ...db.razonesSociales[index], ...req.body };
+  await writeDb(db);
+  res.json(db.razonesSociales[index]);
+});
+
+app.delete('/api/razonesSociales/:id', async (req, res) => {
+  const db = await readDb();
+  const id = parseInt(req.params.id, 10);
+  db.razonesSociales = db.razonesSociales.filter(rs => rs.id !== id);
+  await writeDb(db);
+  res.status(204).send();
+});
+
+// --- Clientes Endpoints ---
 app.get('/api/clientes', async (req, res) => {
   const db = await readDb();
   res.json(db.clientes);
@@ -45,7 +84,7 @@ app.get('/api/clientes', async (req, res) => {
 app.post('/api/clientes', async (req, res) => {
   const db = await readDb();
   const newCliente: Cliente = {
-    id: db.clientes.length > 0 ? Math.max(...db.clientes.map((c: Cliente) => c.id)) + 1 : 1,
+    id: db.clientes.length > 0 ? Math.max(...db.clientes.map(c => c.id)) + 1 : 1,
     ...req.body,
   };
   db.clientes.push(newCliente);
@@ -53,21 +92,26 @@ app.post('/api/clientes', async (req, res) => {
   res.status(201).json(newCliente);
 });
 
+app.delete('/api/clientes/:id', async (req, res) => {
+  const db = await readDb();
+  const clienteId = parseInt(req.params.id, 10);
+  db.clientes = db.clientes.filter(c => c.id !== clienteId);
+  await writeDb(db);
+  res.status(204).send();
+});
+
+// --- Contratos Endpoints ---
 app.get('/api/contratos', async (req, res) => {
   const db = await readDb();
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
   const updatedContratos = db.contratos.map((contrato: Contrato) => {
     if (contrato.fechaTermino && contrato.estatus !== 'Cancelado') {
       try {
         const parts = contrato.fechaTermino.split('-');
         if (parts.length === 3) {
-          const year = parseInt(parts[0], 10);
-          const month = parseInt(parts[1], 10) - 1;
-          const day = parseInt(parts[2], 10);
-          const fechaTermino = new Date(year, month, day);
-
+          const [year, month, day] = parts.map(p => parseInt(p, 10));
+          const fechaTermino = new Date(year, month - 1, day);
           if (today > fechaTermino) {
             return { ...contrato, estatus: 'Vencido' };
           }
@@ -78,14 +122,13 @@ app.get('/api/contratos', async (req, res) => {
     }
     return contrato;
   });
-
   res.json(updatedContratos);
 });
 
 app.post('/api/contratos', async (req, res) => {
   const db = await readDb();
   const newContrato: Contrato = {
-    id: db.contratos.length > 0 ? Math.max(...db.contratos.map((c: Contrato) => c.id)) + 1 : 1,
+    id: db.contratos.length > 0 ? Math.max(...db.contratos.map(c => c.id)) + 1 : 1,
     ...req.body,
   };
   db.contratos.push(newContrato);
@@ -96,82 +139,80 @@ app.post('/api/contratos', async (req, res) => {
 app.put('/api/contratos/:id', async (req, res) => {
   const db = await readDb();
   const contratoId = parseInt(req.params.id, 10);
-  const contratoIndex = db.contratos.findIndex((c: Contrato) => c.id === contratoId);
-
+  const contratoIndex = db.contratos.findIndex(c => c.id === contratoId);
   if (contratoIndex === -1) {
     return res.status(404).json({ message: 'Contrato no encontrado' });
   }
-
-  const updatedContrato = { ...db.contratos[contratoIndex], ...req.body };
-  db.contratos[contratoIndex] = updatedContrato;
+  db.contratos[contratoIndex] = { ...db.contratos[contratoIndex], ...req.body };
   await writeDb(db);
-
-  res.json(updatedContrato);
-});
-
-app.delete('/api/clientes/:id', async (req, res) => {
-  const db = await readDb();
-  const clienteId = parseInt(req.params.id, 10);
-  const clienteIndex = db.clientes.findIndex((c: Cliente) => c.id === clienteId);
-
-  if (clienteIndex === -1) {
-    return res.status(404).json({ message: 'Cliente no encontrado' });
-  }
-
-  db.clientes.splice(clienteIndex, 1);
-  await writeDb(db);
-
-  res.status(204).send();
+  res.json(db.contratos[contratoIndex]);
 });
 
 app.delete('/api/contratos/:id', async (req, res) => {
   const db = await readDb();
   const contratoId = parseInt(req.params.id, 10);
-  const contratoIndex = db.contratos.findIndex((c: Contrato) => c.id === contratoId);
-
-  if (contratoIndex === -1) {
-    return res.status(404).json({ message: 'Contrato no encontrado' });
-  }
-
-  db.contratos.splice(contratoIndex, 1);
+  db.contratos = db.contratos.filter(c => c.id !== contratoId);
   await writeDb(db);
-
   res.status(204).send();
 });
 
-app.post('/api/bulk/clientes', async (req, res) => {
-    const db = await readDb();
-    const nuevosClientes = req.body;
-    const existingClientNames = new Set(db.clientes.map((c: Cliente) => c.nombre.toLowerCase()));
-    const clientesAgregados = [];
-    const clientesOmitidos = [];
-
-    let nextId = db.clientes.length > 0 ? Math.max(...db.clientes.map((c: Cliente) => c.id)) + 1 : 1;
-
-    for (const cliente of nuevosClientes) {
-        if (existingClientNames.has(cliente.nombre.toLowerCase())) {
-            clientesOmitidos.push(cliente.nombre);
-        } else {
-            const nuevoClienteConId = { ...cliente, id: nextId++ };
-            clientesAgregados.push(nuevoClienteConId);
-            existingClientNames.add(cliente.nombre.toLowerCase());
-        }
-    }
-
-    if (clientesAgregados.length > 0) {
-        db.clientes.push(...clientesAgregados);
-        await writeDb(db);
-    }
-
-    let message = `${clientesAgregados.length} clientes agregados con éxito.`;
-    if (clientesOmitidos.length > 0) {
-        message += `
-${clientesOmitidos.length} clientes omitidos por ser duplicados: ${clientesOmitidos.join(', ')}`;
-    }
-
-    res.status(201).json({ message });
+// --- Facturas Endpoints ---
+app.get('/api/facturas', async (req, res) => {
+  const db = await readDb();
+  res.json(db.facturas);
 });
 
+app.post('/api/facturas', async (req, res) => {
+  const db = await readDb();
+  const newFactura: Omit<Factura, 'id'> = req.body;
+  const newFacturaWithId: Factura = {
+    id: db.facturas.length > 0 ? Math.max(...db.facturas.map(f => f.id)) + 1 : 1,
+    ...newFactura,
+  };
+  db.facturas.push(newFacturaWithId);
+  await writeDb(db);
+  res.status(201).json(newFacturaWithId);
+});
+
+// --- Pagos Endpoints ---
+app.get('/api/pagos', async (req, res) => {
+  const db = await readDb();
+  res.json(db.pagos);
+});
+
+app.post('/api/pagos', async (req, res) => {
+  const db = await readDb();
+  const newPago: Omit<Pago, 'id'> = req.body;
+  const newPagoWithId: Pago = {
+    id: db.pagos.length > 0 ? Math.max(...db.pagos.map(p => p.id)) + 1 : 1,
+    ...newPago,
+  };
+  db.pagos.push(newPagoWithId);
+  await writeDb(db);
+  res.status(201).json(newPagoWithId);
+});
+
+app.put('/api/pagos/:id', async (req, res) => {
+  const db = await readDb();
+  const id = parseInt(req.params.id, 10);
+  const index = db.pagos.findIndex(p => p.id === id);
+  if (index === -1) {
+    return res.status(404).json({ message: 'Pago no encontrado' });
+  }
+  db.pagos[index] = { ...db.pagos[index], ...req.body };
+  await writeDb(db);
+  res.json(db.pagos[index]);
+});
+
+app.delete('/api/pagos/:id', async (req, res) => {
+  const db = await readDb();
+  const id = parseInt(req.params.id, 10);
+  db.pagos = db.pagos.filter(p => p.id !== id);
+  await writeDb(db);
+  res.status(204).send();
+});
+
+// --- Bulk Upload Endpoints ---
 const parseDate = (dateString: string) => {
     if (!dateString || typeof dateString !== 'string') return '';
     const parts = dateString.split('/');
@@ -181,69 +222,147 @@ const parseDate = (dateString: string) => {
     return dateString;
 };
 
+const getContratoStatus = (fechaInicioStr: string, fechaTerminoStr: string): string => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const parseDateString = (dateStr: string): Date | null => {
+        if (!dateStr) return null;
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            const [year, month, day] = parts.map(p => parseInt(p, 10));
+            return new Date(year, month - 1, day);
+        }
+        return null;
+    };
+
+    const fechaInicio = parseDateString(fechaInicioStr);
+    const fechaTermino = parseDateString(fechaTerminoStr);
+
+    if (!fechaInicio || !fechaTermino) {
+        return 'Desconocido'; // Or handle as an error
+    }
+
+    if (fechaInicio > today) {
+        return 'Pendiente';
+    } else if (fechaTermino < today) {
+        return 'Vencido';
+    } else {
+        return 'Vigente';
+    }
+};
+
+app.post('/api/bulk/clientes', async (req, res) => {
+    const db = await readDb();
+    const { data, razonSocialId } = req.body;
+    if (!razonSocialId) {
+        return res.status(400).json({ message: 'Debe seleccionar una Razón Social.' });
+    }
+    const nuevosClientes = data;
+    const existingClientNames = new Set(db.clientes.map(c => c.nombre.toLowerCase()));
+    let nextId = db.clientes.length > 0 ? Math.max(...db.clientes.map(c => c.id)) + 1 : 1;
+    const summary = { added: 0, skipped: 0, skippedNames: [] as string[] };
+
+    for (const cliente of nuevosClientes) {
+        if (existingClientNames.has(cliente.nombre.toLowerCase())) {
+            summary.skipped++;
+            summary.skippedNames.push(cliente.nombre);
+        } else {
+            db.clientes.push({ ...cliente, id: nextId++, razonSocialId: Number(razonSocialId) });
+            existingClientNames.add(cliente.nombre.toLowerCase());
+            summary.added++;
+        }
+    }
+    await writeDb(db);
+    res.status(201).json({ message: `Clientes: ${summary.added} agregados, ${summary.skipped} omitidos. Omitidos: ${summary.skippedNames.join(', ')}` });
+});
+
 app.post('/api/bulk/contratos', async (req, res) => {
     const db = await readDb();
-    const nuevosContratos = req.body;
-
-    const existingFolios = new Set(db.contratos.map((c: Contrato) => c.folio));
-    const clientNameToIdMap = new Map(db.clientes.map((c: Cliente) => [c.nombre.toLowerCase(), c.id]));
-
-    const contratosAgregados = [];
-    const contratosOmitidos = [];
-    const contratosNoVinculados = [];
-
-    let nextId = db.contratos.length > 0 ? Math.max(...db.contratos.map((c: Contrato) => c.id)) + 1 : 1;
+    const { data, razonSocialId } = req.body;
+    if (!razonSocialId) {
+        return res.status(400).json({ message: 'Debe seleccionar una Razón Social.' });
+    }
+    const nuevosContratos = data;
+    const existingFolios = new Set(db.contratos.map(c => c.folio));
+    const clientNameToIdMap = new Map(db.clientes.map(c => [c.nombre.toLowerCase(), c.id]));
+    let nextId = db.contratos.length > 0 ? Math.max(...db.contratos.map(c => c.id)) + 1 : 1;
+    const summary = { added: 0, skippedFolio: 0, skippedClient: 0, skippedFolioNames: [] as string[], skippedClientNames: [] as string[] };
 
     for (const contrato of nuevosContratos) {
         if (existingFolios.has(contrato.folio)) {
-            contratosOmitidos.push(contrato.folio);
+            summary.skippedFolio++;
+            summary.skippedFolioNames.push(contrato.folio);
             continue;
         }
-
         const clienteId = clientNameToIdMap.get(contrato.clienteNombre?.toLowerCase());
-
         if (!clienteId) {
-            contratosNoVinculados.push(contrato.nombreProyecto);
+            summary.skippedClient++;
+            summary.skippedClientNames.push(contrato.nombreProyecto);
+            continue;
         }
+        const parsedFechaInicio = parseDate(contrato.fechaInicio);
+        const parsedFechaTermino = parseDate(contrato.fechaTermino);
+        const estatusCalculado = getContratoStatus(parsedFechaInicio, parsedFechaTermino);
 
         const nuevoContrato = {
             ...contrato,
             id: nextId++,
-            clienteId: clienteId || 0, // 0 para 'Desconocido'
-            fechaInicio: parseDate(contrato.fechaInicio),
-            fechaTermino: parseDate(contrato.fechaTermino),
+            clienteId,
+            razonSocialId: Number(razonSocialId),
+            fechaInicio: parsedFechaInicio,
+            fechaTermino: parsedFechaTermino,
+            estatus: estatusCalculado,
         };
         delete nuevoContrato.clienteNombre;
-
-        contratosAgregados.push(nuevoContrato);
+        db.contratos.push(nuevoContrato);
         existingFolios.add(contrato.folio);
+        summary.added++;
     }
-
-    if (contratosAgregados.length > 0) {
-        db.contratos.push(...contratosAgregados);
-        await writeDb(db);
-    }
-
-    let message = `${contratosAgregados.length} contratos agregados con éxito.`;
-    if (contratosOmitidos.length > 0) {
-        message += `
-${contratosOmitidos.length} contratos omitidos por folio duplicado: ${contratosOmitidos.join(', ')}`;
-    }
-    if (contratosNoVinculados.length > 0) {
-        message += `
-${contratosNoVinculados.length} contratos no se pudieron vincular a un cliente: ${contratosNoVinculados.join(', ')}`;
-    }
-
-    res.status(201).json({ message });
+    await writeDb(db);
+    res.status(201).json({ message: `Contratos: ${summary.added} agregados. Omitidos por folio duplicado: ${summary.skippedFolio}. Omitidos por cliente no encontrado: ${summary.skippedClient}.` });
 });
 
+app.post('/api/bulk/facturas', async (req, res) => {
+    const db = await readDb();
+    const nuevasFacturas = req.body;
+    const contratoFolioToIdMap = new Map(db.contratos.map(c => [c.folio, c.id]));
+    let nextId = db.facturas.length > 0 ? Math.max(...db.facturas.map(f => f.id)) + 1 : 1;
+    const summary = { added: 0, skippedContrato: 0, skippedContratoFolios: [] as string[] };
+
+    for (const factura of nuevasFacturas) {
+        const contratoId = contratoFolioToIdMap.get(factura.contratoFolio);
+        if (!contratoId) {
+            summary.skippedContrato++;
+            summary.skippedContratoFolios.push(factura.contratoFolio);
+            continue;
+        }
+        const nuevaFactura: Factura = {
+            id: nextId++,
+            contratoId,
+            folioFactura: factura.folioFactura,
+            fechaEmision: parseDate(factura.fechaEmision),
+            concepto: factura.concepto,
+            importeEstimacion: Number(factura.importeEstimacion) || 0,
+            amortizacionAnticipo: Number(factura.amortizacionAnticipo) || 0,
+            fondoGarantia: Number(factura.fondoGarantia) || 0,
+            deductivaCargos: Number(factura.deductivaCargos) || 0,
+            estatus: 'Pendiente',
+            comentarios: factura.comentarios || '',
+        };
+        db.facturas.push(nuevaFactura);
+        summary.added++;
+    }
+    await writeDb(db);
+    res.status(201).json({ message: `Facturas: ${summary.added} agregadas. Omitidas por folio de contrato no encontrado: ${summary.skippedContrato}.` });
+});
+
+// --- Reportes ---
 app.post('/api/reporte/excel', async (req, res) => {
   const { title, columns, rows } = req.body as ReportData;
-
   if (!title || !columns || !rows) {
     return res.status(400).send('Datos para el reporte incompletos.');
   }
-
   try {
     const buffer = await generateExcel({ title, columns, rows });
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -255,6 +374,7 @@ app.post('/api/reporte/excel', async (req, res) => {
   }
 });
 
+// --- Static serving and App start ---
 app.get('*', (req, res) => {
   res.sendFile(path.join(staticPath, 'index.html'));
 });

@@ -2,13 +2,14 @@ import { Cliente } from '../../types';
 
 interface ClienteListProps {
   clientes: Cliente[];
+  onAdd: () => void;
   onDelete: (clienteId: number) => void;
   onToggleReportModal: () => void;
   searchTerm: string;
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const ClienteList = ({ clientes, onDelete, onToggleReportModal, searchTerm, onSearchChange }: ClienteListProps) => {
+const ClienteList = ({ clientes, onAdd, onDelete, onToggleReportModal, searchTerm, onSearchChange }: ClienteListProps) => {
   return (
     <div>
       <div className="list-header">
@@ -21,6 +22,7 @@ const ClienteList = ({ clientes, onDelete, onToggleReportModal, searchTerm, onSe
             onChange={onSearchChange}
             className="search-input"
           />
+          <button onClick={onAdd} className="add-btn">Nuevo Cliente</button>
           <button onClick={onToggleReportModal} className="report-btn">Generar Reporte</button>
         </div>
       </div>

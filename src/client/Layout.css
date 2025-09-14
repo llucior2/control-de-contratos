@@ -3,9 +3,9 @@
 }
 
 .sidebar {
-  width: 250px;
+  width: 180px;
   background-color: #f0f2f5;
-  padding: 1rem;
+  padding: 0;
   height: 100vh;
 }
 
@@ -26,7 +26,8 @@
 
 .main-content {
   flex-grow: 1;
-  padding: 1rem;
+    padding: 1rem; /* Add 1rem padding on all sides */ /* Add 1rem padding on all sides */
+  /* position: relative; no longer needed */
 }
 
 /* Estilos para la cabecera de las listas */
@@ -49,4 +50,94 @@
   border: 1px solid #ccc;
   font-size: 14px;
   min-width: 250px;
+}
+
+.client-group-header {
+  background-color: #e9ecef;
+  padding: 10px 15px;
+  margin-top: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.client-group-header:hover {
+  background-color: #dee2e6;
+}
+
+/* Generic Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+/* Generic Form Styles */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+/* Global Filter Styles */
+.global-filter-container {
+  position: fixed; /* Changed to fixed */
+  top: 0.5rem;      /* Positioned higher */
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f8f9fa;
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 1050; /* High z-index to be on top */
+}
+
+.global-filter-container label {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-bottom: 0;
+}
+
+.global-filter-container select {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.85rem;
+  max-width: 200px; /* Prevent it from being too wide */
 }

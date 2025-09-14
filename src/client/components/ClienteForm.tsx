@@ -1,12 +1,21 @@
 import { useState } from 'react';
 
-const ClienteForm = ({ onClienteAdded }: { onClienteAdded: () => void }) => {
+interface ClienteFormProps {
+  onClienteAdded: () => void;
+  razonSocialId: number | null; // New prop
+}
+
+const ClienteForm = ({ onClienteAdded, razonSocialId }: ClienteFormProps) => {
   const [nombre, setNombre] = useState('');
   const [rfc, setRfc] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newCliente = { nombre, rfc, contactoPrincipal: { nombre: '', telefono: '', email: '' } };
+    if (!razonSocialId) {
+      alert('Debe seleccionar una Razón Social para agregar un cliente.');
+      return;
+    }
+    const newCliente = { nombre, rfc, contactoPrincipal: { nombre: '', telefono: '', email: '' }, razonSocialId };
     
     await fetch('/api/clientes', {
       method: 'POST',

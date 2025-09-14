@@ -1,4 +1,16 @@
 {
+  "razonesSociales": [
+    {
+      "id": 1,
+      "nombre": "AAAAA",
+      "rfc": "ISNCINSID8"
+    },
+    {
+      "id": 2,
+      "nombre": "BBBBBB",
+      "rfc": "DONVPSIIVNVE"
+    }
+  ],
   "clientes": [
     {
       "nombre": "Cliente 4",
@@ -91,15 +103,15 @@
   ],
   "contratos": [
     {
-      "clienteId": 0,
+      "clienteId": 1,
       "nombreProyecto": "Proyecto 1",
       "folio": "CBS52211",
       "objeto": "Pintura",
       "monto": 88855446,
       "moneda": "MXN",
       "tipoDeCambio": 1,
-      "fechaInicio": "",
-      "fechaTermino": "",
+      "fechaInicio": "2025-09-01",
+      "fechaTermino": "2025-09-16",
       "tipoContrato": "Precio Unitario",
       "tipoIVA": "IVA 16%",
       "anticipoPorcentaje": 30,
@@ -108,15 +120,15 @@
       "id": 1
     },
     {
-      "clienteId": 0,
+      "clienteId": 6,
       "nombreProyecto": "Proyecto 2",
       "folio": "CBS52212",
       "objeto": "Tablaroca",
       "monto": 88855446,
       "moneda": "MXN",
       "tipoDeCambio": 1,
-      "fechaInicio": "",
-      "fechaTermino": "",
+      "fechaInicio": "2025-09-19",
+      "fechaTermino": "2025-10-10",
       "tipoContrato": "Precio Unitario",
       "tipoIVA": "IVA 16%",
       "anticipoPorcentaje": 30,
@@ -125,15 +137,15 @@
       "id": 2
     },
     {
-      "clienteId": 0,
+      "clienteId": 8,
       "nombreProyecto": "Proyecto 3",
       "folio": "CBS52213",
       "objeto": "Tablaroca",
       "monto": 88855447,
       "moneda": "MXN",
       "tipoDeCambio": 1,
-      "fechaInicio": "",
-      "fechaTermino": "",
+      "fechaInicio": "2025-07-28",
+      "fechaTermino": "2025-09-06",
       "tipoContrato": "Precio Unitario",
       "tipoIVA": "IVA 16%",
       "anticipoPorcentaje": 30,
@@ -142,20 +154,20 @@
       "id": 3
     },
     {
-      "clienteId": 0,
+      "clienteId": 2,
       "nombreProyecto": "Proyecto 4",
       "folio": "CBS52214",
       "objeto": "Tablaroca",
       "monto": 88855448,
       "moneda": "MXN",
       "tipoDeCambio": 1,
-      "fechaInicio": "",
-      "fechaTermino": "",
+      "fechaInicio": "2025-08-31",
+      "fechaTermino": "2025-09-11",
       "tipoContrato": "Precio Unitario",
       "tipoIVA": "IVA 16%",
       "anticipoPorcentaje": 30,
       "fondoGarantiaPorcentaje": 5,
-      "estatus": "Vigente",
+      "estatus": "Vencido",
       "id": 4
     },
     {
@@ -176,5 +188,21 @@
       "id": 5
     }
   ],
-  "ordenesDeCambio": []
+  "ordenesDeCambio": [],
+  "facturas": [
+    {
+      "id": 1,
+      "contratoId": 1,
+      "folioFactura": "FA-2023-001",
+      "fechaEmision": "2025-09-13",
+      "concepto": "Estimación 01",
+      "importeEstimacion": "500000",
+      "amortizacionAnticipo": 0,
+      "fondoGarantia": 0,
+      "deductivaCargos": 0,
+      "estatus": "Pendiente",
+      "comentarios": ""
+    }
+  ],
+  "pagos": []
 }

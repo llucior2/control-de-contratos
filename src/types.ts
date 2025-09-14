@@ -1,6 +1,12 @@
+export interface RazonSocial {
+  id: number;
+  nombre: string;
+  rfc: string;
+}
 
 export interface Cliente {
   id: number;
+  razonSocialId: number;
   nombre: string;
   rfc?: string;
   direccion?: string;
@@ -22,6 +28,7 @@ export type TipoContrato =
 
 export interface Contrato {
   id: number;
+  razonSocialId: number;
   clienteId: number;
   nombreProyecto: string;
   folio: string;
@@ -49,8 +56,35 @@ export interface OrdenDeCambio {
   autorizadoPor: string;
 }
 
+export interface Factura {
+  id: number;
+  contratoId: number;
+  folioFactura: string;
+  fechaEmision: string;
+  concepto: string;
+  importeEstimacion: number;
+  amortizacionAnticipo: number;
+  fondoGarantia: number;
+  deductivaCargos: number;
+  estatus: 'Pendiente' | 'Pagada';
+  fechaPago?: string;
+  comentarios?: string;
+}
+
+export interface Pago {
+  id: number;
+  facturaId: number;
+  fechaPago: string;
+  montoPagado: number;
+  metodoPago: string;
+  comentarios?: string;
+}
+
 export interface Database {
+  razonesSociales: RazonSocial[];
   clientes: Cliente[];
   contratos: Contrato[];
   ordenesDeCambio: OrdenDeCambio[];
+  facturas: Factura[];
+  pagos: Pago[];
 }

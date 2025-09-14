@@ -2,7 +2,7 @@
   "name": "control-de-contratos",
   "productName": "Control de Contratos",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "main": "electron.cjs",
   "scripts": {
