@@ -68,7 +68,7 @@ export interface Factura {
   amortizacionAnticipo: number;
   fondoGarantia: number;
   deductivaCargos: number;
-  estatus: 'Pendiente' | 'Pagada';
+  estatus: 'Pendiente' | 'Pagada' | 'Pagada Parcialmente';
   fechaPago?: string;
   comentarios?: string;
 }
@@ -91,6 +91,7 @@ export interface ProcesoConstructivo {
 
 export interface CatalogoConcepto {
   id: number;
+  clave: string; // Added clave
   nombre: string;
   disciplina: string;
 }

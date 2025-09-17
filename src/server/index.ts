@@ -58,7 +58,7 @@ const writeDb = async (db: Database) => {
 // --- Helper Functions ---
 const updateInvoiceStatus = (factura: Factura, allPagos: Pago[]) => {
     const relevantPagos = allPagos.filter(p => p.facturaId === factura.id);
-    const totalPagado = relevantPagos.reduce((sum, p) => sum + (p.monto || 0), 0);
+    const totalPagado = relevantPagos.reduce((sum, p) => sum + (p.montoPagado || 0), 0);
     
     // Calculate the net amount of the invoice
     const montoNetoFactura = (factura.importeEstimacion || 0) - 
@@ -496,7 +496,8 @@ app.post('/api/bulk/clientes', upload.single('file'), async (req, res) => {
         errors: [] as { row: number, data: any, error: string }[],
     };
 
-    for (const [index, cliente] of nuevosClientes.entries()) {
+    for (const [index, clienteData] of nuevosClientes.entries()) {
+        const cliente = clienteData as any; // Use 'any' for now to avoid deep type issues with Excel data
         try {
             if (!cliente.nombre || typeof cliente.nombre !== 'string' || cliente.nombre.trim() === '') {
                 summary.errors.push({ row: index + 2, data: cliente, error: 'El nombre del cliente no puede estar vacío.' });
@@ -512,8 +513,8 @@ app.post('/api/bulk/clientes', upload.single('file'), async (req, res) => {
                     id: nextId++,
                     razonSocialId: Number(razonSocialId),
                     nombre: cliente.nombre,
-                    rfc: cliente.rfc,
-                    direccion: cliente.direccion,
+                    rfc: cliente.rfc || '',
+                    direccion: cliente.direccion || '',
                     contactoPrincipal: {
                         nombre: cliente.contacto_nombre || '',
                         telefono: cliente.contacto_telefono || '',
@@ -559,7 +560,8 @@ app.post('/api/bulk/contratos', upload.single('file'), async (req, res) => {
     let nextId = db.contratos.length > 0 ? Math.max(...db.contratos.map(c => c.id)) + 1 : 1;
     const summary = { added: 0, skippedFolio: 0, skippedClient: 0, skippedFolioNames: [] as string[], skippedClientNames: [] as string[], errors: [] as any[] };
 
-    for (const [index, contrato] of nuevosContratos.entries()) {
+    for (const [index, contratoData] of nuevosContratos.entries()) {
+        const contrato = contratoData as any; // Use 'any' for now to avoid deep type issues with Excel data
         if (existingFolios.has(contrato.folio)) {
             summary.errors.push({ row: index + 2, data: contrato, error: `Folio de contrato '${contrato.folio}' ya existe.` });
             summary.skippedFolio++;
@@ -577,16 +579,27 @@ app.post('/api/bulk/contratos', upload.single('file'), async (req, res) => {
         const parsedFechaTermino = parseDate(contrato.fechaTermino);
         const estatusCalculado = getContratoStatus(parsedFechaInicio, parsedFechaTermino);
 
-        const nuevoContrato = {
-            ...contrato,
+        const nuevoContrato: Contrato = { // Explicitly type as Contrato
             id: nextId++,
-            clienteId,
             razonSocialId: Number(razonSocialId),
+            clienteId,
+            nombreProyecto: contrato.nombreProyecto || '',
+            folio: contrato.folio || '',
+            objeto: contrato.objeto || '',
+            monto: Number(contrato.monto) || 0,
+            moneda: contrato.moneda || 'MXN',
+            tipoDeCambio: Number(contrato.tipoDeCambio) || undefined,
             fechaInicio: parsedFechaInicio,
             fechaTermino: parsedFechaTermino,
-            estatus: estatusCalculado,
+            tipoContrato: contrato.tipoContrato || 'Precio Unitario',
+            tipoIVA: contrato.tipoIVA || 'IVA 16%',
+            anticipoPorcentaje: Number(contrato.anticipoPorcentaje) || 0,
+            fondoGarantiaPorcentaje: Number(contrato.fondoGarantiaPorcentaje) || 0,
+            montoAnticipoOtorgado: Number(contrato.montoAnticipoOtorgado) || 0,
+            estatus: estatusCalculado as 'Vigente' | 'Vencido' | 'Cancelado',
+            fianzaAnticipo: contrato.fianzaAnticipo || undefined,
+            penalizaciones: contrato.penalizaciones || undefined,
         };
-        delete nuevoContrato.clienteNombre;
         db.contratos.push(nuevoContrato);
         existingFolios.add(contrato.folio);
         summary.added++;
@@ -665,10 +678,10 @@ app.post('/api/bulk-upload/pagos', upload.single('file'), async (req, res) => {
         const newPago: Pago = {
             id: nextId++,
             facturaId: factura.id,
-            fecha: typedRow.fecha ? new Date(typedRow.fecha).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-            monto: Number(typedRow.monto) || 0,
-            metodoDePago: typedRow.metodoDePago || 'Transferencia',
-            referencia: typedRow.comentario || ''
+            fechaPago: typedRow.fechaPago ? new Date(typedRow.fechaPago).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+            montoPagado: Number(typedRow.montoPagado) || 0,
+            metodoPago: typedRow.metodoPago || 'Transferencia',
+            comentarios: typedRow.comentarios || ''
         };
 
         db.pagos.push(newPago);
@@ -708,8 +721,7 @@ app.post('/api/bulk-upload/catalogo-conceptos', upload.single('file'), async (re
             id: nextId++,
             clave: typedRow.clave,
             nombre: typedRow.nombre,
-            unidad: typedRow.unidad,
-            precioUnitario: Number(typedRow.precioUnitario) || 0
+            disciplina: typedRow.disciplina || '', // Ensure disciplina is always a string
         };
 
         db.catalogoConceptos.push(newConcepto);
@@ -750,7 +762,6 @@ app.post('/api/bulk-upload/procesos-constructivos', upload.single('file'), async
             id: nextId++,
             catalogoConceptoId: conceptoId,
             nombre: typedRow.nombre,
-            descripcion: typedRow.descripcion,
             porcentaje: Number(typedRow.porcentaje) || 0
         };
 

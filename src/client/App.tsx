@@ -17,10 +17,12 @@ import PagoList from './components/PagoList';
 import PagoForm from './components/PagoForm';
 import OrdenDeCambioList from './components/OrdenDeCambioList';
 import OrdenDeCambioForm from './components/OrdenDeCambioForm';
+import CatalogoConceptoForm from './components/CatalogoConceptoForm'; // New import
+import ProcesoConstructivoForm from './components/ProcesoConstructivoForm'; // New import
+import CatalogoView from './components/CatalogoView'; // Explicitly importing CatalogoView
 import './Layout.css';
 
-// Placeholder for the new component
-const CatalogoView = () => <div><h2>Catálogo de Conceptos y Procesos</h2><p>Próximamente...</p></div>;
+
 
 const initialVisibleFields = {
   folio: true,
@@ -61,6 +63,12 @@ function App() {
   const [isRazonSocialFormOpen, setIsRazonSocialFormOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  
+  const [selectedConceptoId, setSelectedConceptoId] = useState<number | null>(null);
+  const [editingConcepto, setEditingConcepto] = useState<CatalogoConcepto | null>(null);
+  const [isConceptoFormOpen, setIsConceptoFormOpen] = useState(false);
+  const [editingProceso, setEditingProceso] = useState<ProcesoConstructivo | null>(null);
+  const [isProcesoFormOpen, setIsProcesoFormOpen] = useState(false);
   
   // Filter & Search States
   const [selectedRazonSocialId, setSelectedRazonSocialId] = useState<number | null>(null);
@@ -330,6 +338,72 @@ function App() {
     setEditingOrdenDeCambio(null);
   };
 
+  // --- Catalogo Concepto Handlers ---
+  const handleSaveCatalogoConcepto = async (concepto: Omit<CatalogoConcepto, 'id'> | CatalogoConcepto) => {
+    const isEditing = 'id' in concepto;
+    const endpoint = isEditing ? `/api/catalogoConceptos/${concepto.id}` : '/api/catalogoConceptos';
+    const method = isEditing ? 'PUT' : 'POST';
+
+    await fetch(endpoint, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(concepto),
+    });
+    setIsConceptoFormOpen(false);
+    setEditingConcepto(null);
+    fetchCatalogoConceptos();
+  };
+
+  const handleDeleteCatalogoConcepto = async (id: number) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este concepto?')) {
+      await fetch(`/api/catalogoConceptos/${id}`, { method: 'DELETE' });
+      fetchCatalogoConceptos();
+    }
+  };
+
+  const handleAddCatalogoConceptoClick = () => {
+    setEditingConcepto(null);
+    setIsConceptoFormOpen(true);
+  };
+
+  const handleEditCatalogoConceptoClick = (concepto: CatalogoConcepto) => {
+    setEditingConcepto(concepto);
+    setIsConceptoFormOpen(true);
+  };
+
+  // --- Proceso Constructivo Handlers ---
+  const handleSaveProcesoConstructivo = async (proceso: Omit<ProcesoConstructivo, 'id'> | ProcesoConstructivo) => {
+    const isEditing = 'id' in proceso;
+    const endpoint = isEditing ? `/api/procesosConstructivos/${proceso.id}` : '/api/procesosConstructivos';
+    const method = isEditing ? 'PUT' : 'POST';
+
+    await fetch(endpoint, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(proceso),
+    });
+    setIsProcesoFormOpen(false);
+    setEditingProceso(null);
+    fetchProcesosConstructivos();
+  };
+
+  const handleDeleteProcesoConstructivo = async (id: number) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este proceso constructivo?')) {
+      await fetch(`/api/procesosConstructivos/${id}`, { method: 'DELETE' });
+      fetchProcesosConstructivos();
+    }
+  };
+
+  const handleAddProcesoConstructivoClick = () => {
+    setEditingProceso(null);
+    setIsProcesoFormOpen(true);
+  };
+
+  const handleEditProcesoConstructivoClick = (proceso: ProcesoConstructivo) => {
+    setEditingProceso(proceso);
+    setIsProcesoFormOpen(true);
+  };
+
   // --- UI Handlers ---
   const handleVisibilityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
@@ -446,7 +520,20 @@ function App() {
             onDeletePago={handleDeletePago}
           />
         )}
-        {currentView === 'catalogoConceptos' && <CatalogoView />}
+        {currentView === 'catalogoConceptos' && (
+          <CatalogoView
+            conceptos={catalogoConceptos}
+            procesos={procesosConstructivos}
+            selectedConceptoId={selectedConceptoId}
+            onSelectConcepto={(concepto) => setSelectedConceptoId(concepto.id)}
+            onAddConcepto={handleAddCatalogoConceptoClick}
+            onEditConcepto={handleEditCatalogoConceptoClick}
+            onDeleteConcepto={handleDeleteCatalogoConcepto}
+            onAddProceso={handleAddProcesoConstructivoClick}
+            onEditProceso={handleEditProcesoConstructivoClick}
+            onDeleteProceso={handleDeleteProcesoConstructivo}
+          />
+        )}
         {currentView === 'nuevoCliente' && <ClienteForm onClienteAdded={() => { fetchClientes(); setCurrentView('clientes'); }} razonSocialId={selectedRazonSocialId} />}
         {currentView === 'nuevoContrato' && <ContratoForm clientes={clientes} razonesSociales={razonesSociales} onContratoAdded={() => { fetchContratos(); setCurrentView('contratos'); }} />}
         {currentView === 'cargaMasiva' && <BulkUpload razonesSociales={razonesSociales} onUploadComplete={fetchAllData} />}
@@ -510,6 +597,38 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Modals for CatalogoConcepto */}
+      {isConceptoFormOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <button onClick={() => setIsConceptoFormOpen(false)} className="close-btn">X</button>
+            {/* Assuming CatalogoConceptoForm exists and takes onSave and existingConcepto props */}
+            <CatalogoConceptoForm
+              onSave={handleSaveCatalogoConcepto}
+              onCancel={() => { setIsConceptoFormOpen(false); setEditingConcepto(null); }}
+              existingConcepto={editingConcepto}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Modals for ProcesoConstructivo */}
+      {isProcesoFormOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <button onClick={() => setIsProcesoFormOpen(false)} className="close-btn">X</button>
+            {/* Assuming ProcesoConstructivoForm exists and takes onSave and existingProceso props */}
+            <ProcesoConstructivoForm
+              onSave={handleSaveProcesoConstructivo}
+              onCancel={() => { setIsProcesoFormOpen(false); setEditingProceso(null); }}
+              existingProceso={editingProceso}
+              catalogoConceptos={catalogoConceptos} // Pass catalogoConceptos for linking
+            />
+          </div>
+        </div>
+      )}
+
       <ViewOptionsModal
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}

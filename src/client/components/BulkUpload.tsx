@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
-import { RazonSocial, Factura, CatalogoConcepto, ProcesoConstructivo } from '../../types';
+import { RazonSocial } from '../../types';
 import './BulkUpload.css';
 
 interface BulkUploadProps {

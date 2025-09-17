@@ -8,14 +8,17 @@ interface CatalogoConceptoFormProps {
 }
 
 const CatalogoConceptoForm = ({ onSave, onCancel, existingConcepto }: CatalogoConceptoFormProps) => {
+  const [clave, setClave] = useState('');
   const [nombre, setNombre] = useState('');
   const [disciplina, setDisciplina] = useState('');
 
   useEffect(() => {
     if (existingConcepto) {
+      setClave(existingConcepto.clave);
       setNombre(existingConcepto.nombre);
       setDisciplina(existingConcepto.disciplina);
     } else {
+      setClave('');
       setNombre('');
       setDisciplina('');
     }
@@ -23,12 +26,12 @@ const CatalogoConceptoForm = ({ onSave, onCancel, existingConcepto }: CatalogoCo
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nombre || !disciplina) {
-      alert('El nombre y la disciplina son obligatorios.');
+    if (!clave || !nombre || !disciplina) {
+      alert('La clave, el nombre y la disciplina son obligatorios.');
       return;
     }
 
-    const data = { nombre, disciplina };
+    const data = { clave, nombre, disciplina };
 
     if (existingConcepto) {
       onSave({ ...existingConcepto, ...data });
@@ -40,6 +43,17 @@ const CatalogoConceptoForm = ({ onSave, onCancel, existingConcepto }: CatalogoCo
   return (
     <form onSubmit={handleSubmit}>
       <h3>{existingConcepto ? 'Editar' : 'Nuevo'} Concepto de Catálogo</h3>
+      <div className="form-group">
+        <label>Clave del Concepto</label>
+        <input 
+          type="text" 
+          value={clave} 
+          onChange={(e) => setClave(e.target.value)} 
+          placeholder="Ej. M-001" 
+          required 
+          disabled={!!existingConcepto} // Disable if editing existing concept
+        />
+      </div>
       <div className="form-group">
         <label>Nombre del Concepto</label>
         <input 
