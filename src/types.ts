@@ -44,6 +44,8 @@ export interface Contrato {
   fondoGarantiaPorcentaje: number;
   montoAnticipoOtorgado: number;
   estatus: 'Vigente' | 'Vencido' | 'Cancelado';
+  fianzaAnticipo?: string; // Folio o descripción de la fianza
+  penalizaciones?: string; // Descripción de penalizaciones
 }
 
 export interface OrdenDeCambio {
@@ -80,6 +82,19 @@ export interface Pago {
   comentarios?: string;
 }
 
+export interface ProcesoConstructivo {
+  id: number;
+  catalogoConceptoId: number;
+  nombre: string;
+  porcentaje: number;
+}
+
+export interface CatalogoConcepto {
+  id: number;
+  nombre: string;
+  disciplina: string;
+}
+
 export interface Database {
   razonesSociales: RazonSocial[];
   clientes: Cliente[];
@@ -87,4 +102,6 @@ export interface Database {
   ordenesDeCambio: OrdenDeCambio[];
   facturas: Factura[];
   pagos: Pago[];
+  catalogoConceptos: CatalogoConcepto[];
+  procesosConstructivos: ProcesoConstructivo[];
 }

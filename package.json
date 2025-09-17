@@ -2,7 +2,7 @@
   "name": "control-de-contratos",
   "productName": "Control de Contratos",
   "private": true,
-  "version": "0.1.2",
+  "version": "0.1.3",
   "type": "module",
   "main": "electron.cjs",
   "scripts": {
@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "server": "tsx watch src/server/index.ts",
     "electron:start": "npm run build && electron .",
-    "dist": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder",
+    "dist": "npm run build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder",
     "start": "concurrently \"npm run server\" \"npm run dev\""
   },
   "dependencies": {
@@ -44,9 +44,7 @@
   },
   "build": {
     "publish": {
-      "provider": "github",
-      "owner": "llucior2",
-      "repo": "control-de-contratos"
+      "provider": "github"
     },
     "appId": "com.ipemyc.controldecontratos",
     "productName": "Control de Contratos",
@@ -54,6 +52,8 @@
       "dist/**/*",
       "dist-server/**/*",
       "electron.cjs",
+      "index.html",
+      "data/**/*",
       "package.json"
     ],
     "directories": {

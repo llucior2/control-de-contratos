@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Contrato, Cliente, Factura, RazonSocial } from '../types';
+import { Contrato, Cliente, Factura, RazonSocial, Pago, OrdenDeCambio, CatalogoConcepto, ProcesoConstructivo } from '../types';
 import ContratoForm from './components/ContratoForm';
 import ClienteForm from './components/ClienteForm';
 import ContratoList from './components/ContratoList';
@@ -13,7 +13,14 @@ import FacturaForm from './components/FacturaForm';
 import RazonSocialList from './components/RazonSocialList';
 import RazonSocialForm from './components/RazonSocialForm';
 import GlobalFilter from './components/GlobalFilter';
+import PagoList from './components/PagoList';
+import PagoForm from './components/PagoForm';
+import OrdenDeCambioList from './components/OrdenDeCambioList';
+import OrdenDeCambioForm from './components/OrdenDeCambioForm';
 import './Layout.css';
+
+// Placeholder for the new component
+const CatalogoView = () => <div><h2>Catálogo de Conceptos y Procesos</h2><p>Próximamente...</p></div>;
 
 const initialVisibleFields = {
   folio: true,
@@ -36,12 +43,21 @@ function App() {
   const [contratos, setContratos] = useState<Contrato[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [facturas, setFacturas] = useState<Factura[]>([]);
+  const [pagos, setPagos] = useState<Pago[]>([]);
+  const [ordenesDeCambio, setOrdenesDeCambio] = useState<OrdenDeCambio[]>([]);
+  const [catalogoConceptos, setCatalogoConceptos] = useState<CatalogoConcepto[]>([]);
+  const [procesosConstructivos, setProcesosConstructivos] = useState<ProcesoConstructivo[]>([]);
 
   // View & Modal States
   const [currentView, setCurrentView] = useState('contratos');
   const [editingContrato, setEditingContrato] = useState<Contrato | null>(null);
   const [editingRazonSocial, setEditingRazonSocial] = useState<RazonSocial | null>(null);
   const [isFacturaFormOpen, setIsFacturaFormOpen] = useState(false);
+  const [editingFactura, setEditingFactura] = useState<Factura | null>(null);
+  const [isPagoFormOpen, setIsPagoFormOpen] = useState(false);
+  const [editingPago, setEditingPago] = useState<Pago | null>(null);
+  const [isOrdenDeCambioFormOpen, setIsOrdenDeCambioFormOpen] = useState(false);
+  const [editingOrdenDeCambio, setEditingOrdenDeCambio] = useState<OrdenDeCambio | null>(null);
   const [isRazonSocialFormOpen, setIsRazonSocialFormOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -66,6 +82,10 @@ function App() {
     fetchContratos();
     fetchClientes();
     fetchFacturas();
+    fetchPagos();
+    fetchOrdenesDeCambio();
+    fetchCatalogoConceptos();
+    fetchProcesosConstructivos();
   };
 
   const fetchRazonesSociales = async () => {
@@ -90,6 +110,48 @@ function App() {
     const response = await fetch('/api/facturas');
     const data = await response.json();
     setFacturas(data);
+  };
+
+  const fetchPagos = async () => {
+    const response = await fetch('/api/pagos');
+    const data = await response.json();
+    setPagos(data);
+  };
+
+  const fetchOrdenesDeCambio = async () => {
+    try {
+        const response = await fetch('/api/ordenesDeCambio');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        setOrdenesDeCambio(data);
+    } catch (error) {
+        console.error("Could not fetch ordenes de cambio:", error);
+        setOrdenesDeCambio([]);
+    }
+  };
+
+  const fetchCatalogoConceptos = async () => {
+    try {
+        const response = await fetch('/api/catalogoConceptos');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        setCatalogoConceptos(data);
+    } catch (error) {
+        console.error("Could not fetch catalogo conceptos:", error);
+        setCatalogoConceptos([]);
+    }
+  };
+
+  const fetchProcesosConstructivos = async () => {
+    try {
+        const response = await fetch('/api/procesosConstructivos');
+        if (!response.ok) throw new Error('Network response was not ok');
+        const data = await response.json();
+        setProcesosConstructivos(data);
+    } catch (error) {
+        console.error("Could not fetch procesos constructivos:", error);
+        setProcesosConstructivos([]);
+    }
   };
 
   // --- Razon Social Handlers ---
@@ -154,14 +216,118 @@ function App() {
   };
 
   // --- Factura Handlers ---
-  const handleSaveFactura = async (factura: Omit<Factura, 'id'>) => {
-    await fetch('/api/facturas', {
-      method: 'POST',
+  const handleAddFacturaClick = () => {
+    setEditingFactura(null);
+    setIsFacturaFormOpen(true);
+  };
+
+  const handleEditFacturaClick = (factura: Factura) => {
+    setEditingFactura(factura);
+    setIsFacturaFormOpen(true);
+  };
+
+  const handleDeleteFactura = async (facturaId: number) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta factura?')) {
+      await fetch(`/api/facturas/${facturaId}`, { method: 'DELETE' });
+      fetchFacturas();
+    }
+  };
+
+  const handleSaveFactura = async (factura: Omit<Factura, 'id'> | Factura) => {
+    const isEditing = 'id' in factura;
+    const endpoint = isEditing ? `/api/facturas/${factura.id}` : '/api/facturas';
+    const method = isEditing ? 'PUT' : 'POST';
+
+    await fetch(endpoint, {
+      method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(factura),
     });
     setIsFacturaFormOpen(false);
+    setEditingFactura(null);
     fetchFacturas();
+  };
+
+  const handleCloseFacturaForm = () => {
+    setIsFacturaFormOpen(false);
+    setEditingFactura(null);
+  };
+
+  // --- Pago Handlers ---
+  const handleAddPagoClick = () => {
+    setEditingPago(null);
+    setIsPagoFormOpen(true);
+  };
+
+  const handleEditPagoClick = (pago: Pago) => {
+    setEditingPago(pago);
+    setIsPagoFormOpen(true);
+  };
+
+  const handleDeletePago = async (pagoId: number) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este pago?')) {
+      await fetch(`/api/pagos/${pagoId}`, { method: 'DELETE' });
+      fetchPagos();
+    }
+  };
+
+  const handleSavePago = async (pago: Omit<Pago, 'id'> | Pago) => {
+    const isEditing = 'id' in pago;
+    const endpoint = isEditing ? `/api/pagos/${pago.id}` : '/api/pagos';
+    const method = isEditing ? 'PUT' : 'POST';
+
+    await fetch(endpoint, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(pago),
+    });
+    setIsPagoFormOpen(false);
+    setEditingPago(null);
+    fetchPagos();
+  };
+
+  const handleClosePagoForm = () => {
+    setIsPagoFormOpen(false);
+    setEditingPago(null);
+  };
+
+  // --- Orden de Cambio Handlers ---
+  const handleAddOrdenDeCambioClick = () => {
+    setEditingOrdenDeCambio(null);
+    setIsOrdenDeCambioFormOpen(true);
+  };
+
+  const handleEditOrdenDeCambioClick = (orden: OrdenDeCambio) => {
+    setEditingOrdenDeCambio(orden);
+    setIsOrdenDeCambioFormOpen(true);
+  };
+
+  const handleDeleteOrdenDeCambio = async (ordenId: number) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta orden de cambio?')) {
+      await fetch(`/api/ordenesDeCambio/${ordenId}`, { method: 'DELETE' });
+      fetchOrdenesDeCambio();
+    }
+  };
+
+  const handleSaveOrdenDeCambio = async (orden: Omit<OrdenDeCambio, 'id'> | OrdenDeCambio) => {
+    const isEditing = 'id' in orden;
+    const endpoint = isEditing ? `/api/ordenesDeCambio/${orden.id}` : '/api/ordenesDeCambio';
+    const method = isEditing ? 'PUT' : 'POST';
+
+    await fetch(endpoint, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orden),
+    });
+    setIsOrdenDeCambioFormOpen(false);
+    setEditingOrdenDeCambio(null);
+    fetchOrdenesDeCambio();
+    fetchContratos(); // Also refetch contratos as the total amount might change
+  };
+
+  const handleCloseOrdenDeCambioForm = () => {
+    setIsOrdenDeCambioFormOpen(false);
+    setEditingOrdenDeCambio(null);
   };
 
   // --- UI Handlers ---
@@ -188,22 +354,34 @@ function App() {
 
   return (
     <div className="app-layout">
-      <GlobalFilter
-         razonesSociales={razonesSociales}
-         selectedId={selectedRazonSocialId}
-         onSelect={setSelectedRazonSocialId}
-      />
       <div className="sidebar">
-        <h1>Gestión de Contratos</h1>
-        <ul className="sidebar-menu">
-          <li><button onClick={() => setCurrentView('razonesSociales')}>Razones Sociales</button></li>
-          <li><button onClick={() => setCurrentView('contratos')}>Contratos Vigentes</button></li>
-          <li><button onClick={() => setCurrentView('clientes')}>Clientes</button></li>
-          <li><button onClick={() => setCurrentView('facturacion')}>Facturación</button></li>
-          <li><button onClick={() => setCurrentView('cargaMasiva')}>Carga Masiva</button></li>
-        </ul>
+        <h1>Gestión</h1>
+        <div className="nav-category">
+          <h3><i className="fas fa-folder-open"></i> Proyectos</h3>
+          <button onClick={() => setCurrentView('contratos')}><i className="fas fa-file-signature"></i> Contratos</button>
+          <button onClick={() => setCurrentView('ordenesDeCambio')}><i className="fas fa-exchange-alt"></i> Órdenes de Cambio</button>
+          <button onClick={() => setCurrentView('facturacion')}><i className="fas fa-file-invoice-dollar"></i> Facturación</button>
+          <button onClick={() => setCurrentView('pagos')}><i className="fas fa-hand-holding-usd"></i> Pagos</button>
+        </div>
+        <div className="nav-category">
+          <h3><i className="fas fa-book"></i> Catálogos</h3>
+          <button onClick={() => setCurrentView('clientes')}><i className="fas fa-users"></i> Clientes</button>
+          <button onClick={() => setCurrentView('razonesSociales')}><i className="fas fa-building"></i> Razones Sociales</button>
+          <button onClick={() => setCurrentView('catalogo')}><i className="fas fa-sitemap"></i> Conceptos y Procesos</button>
+        </div>
+        <div className="nav-category">
+          <h3><i className="fas fa-tools"></i> Herramientas</h3>
+          <button onClick={() => setCurrentView('cargaMasiva')}><i className="fas fa-upload"></i> Carga Masiva</button>
+        </div>
       </div>
       <div className="main-content">
+        <div className="main-content-header">
+          <GlobalFilter
+            razonesSociales={razonesSociales}
+            selectedId={selectedRazonSocialId}
+            onSelect={setSelectedRazonSocialId}
+          />
+        </div>
 
         
         {currentView === 'razonesSociales' && (
@@ -228,6 +406,15 @@ function App() {
             onSearchChange={e => setSearchTerm(e.target.value)}
           />
         )}
+        {currentView === 'ordenesDeCambio' && (
+          <OrdenDeCambioList
+            ordenes={ordenesDeCambio}
+            contratos={contratos}
+            onAdd={handleAddOrdenDeCambioClick}
+            onEdit={handleEditOrdenDeCambioClick}
+            onDelete={handleDeleteOrdenDeCambio}
+          />
+        )}
         {currentView === 'clientes' && (
           <ClienteList
             clientes={filteredClientes}
@@ -243,11 +430,25 @@ function App() {
             clientes={clientes} 
             facturas={facturas} 
             contratos={contratos} 
-            onAddFactura={() => setIsFacturaFormOpen(true)}
+            onAddFactura={handleAddFacturaClick}
+            onEditFactura={handleEditFacturaClick}
+            onDeleteFactura={handleDeleteFactura}
           />
         )}
+        {currentView === 'pagos' && (
+          <PagoList 
+            pagos={pagos}
+            facturas={facturas}
+            contratos={contratos}
+            clientes={clientes}
+            onAddPago={handleAddPagoClick}
+            onEditPago={handleEditPagoClick}
+            onDeletePago={handleDeletePago}
+          />
+        )}
+        {currentView === 'catalogoConceptos' && <CatalogoView />}
         {currentView === 'nuevoCliente' && <ClienteForm onClienteAdded={() => { fetchClientes(); setCurrentView('clientes'); }} razonSocialId={selectedRazonSocialId} />}
-        {currentView === 'nuevoContrato' && <ContratoForm clientes={clientes} onContratoAdded={() => { fetchContratos(); setCurrentView('contratos'); }} razonSocialId={selectedRazonSocialId} />}
+        {currentView === 'nuevoContrato' && <ContratoForm clientes={clientes} razonesSociales={razonesSociales} onContratoAdded={() => { fetchContratos(); setCurrentView('contratos'); }} />}
         {currentView === 'cargaMasiva' && <BulkUpload razonesSociales={razonesSociales} onUploadComplete={fetchAllData} />}
       </div>
 
@@ -263,8 +464,38 @@ function App() {
       {isFacturaFormOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <button onClick={() => setIsFacturaFormOpen(false)} className="close-btn">X</button>
-            <FacturaForm onSave={handleSaveFactura} clientes={clientes} contratos={contratos} allFacturas={facturas} />
+            <button onClick={handleCloseFacturaForm} className="close-btn">X</button>
+            <FacturaForm 
+              onSave={handleSaveFactura} 
+              clientes={clientes} 
+              contratos={contratos} 
+              allFacturas={facturas} 
+              existingFactura={editingFactura}
+            />
+          </div>
+        </div>
+      )}
+       {isPagoFormOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <PagoForm 
+              onSave={handleSavePago} 
+              onCancel={handleClosePagoForm}
+              facturas={facturas} 
+              existingPago={editingPago}
+            />
+          </div>
+        </div>
+      )}
+      {isOrdenDeCambioFormOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <OrdenDeCambioForm 
+              onSave={handleSaveOrdenDeCambio} 
+              onCancel={handleCloseOrdenDeCambioForm}
+              contratos={contratos} 
+              existingOrden={editingOrdenDeCambio}
+            />
           </div>
         </div>
       )}

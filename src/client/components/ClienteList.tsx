@@ -27,17 +27,29 @@ const ClienteList = ({ clientes, onAdd, onDelete, onToggleReportModal, searchTer
         </div>
       </div>
       <div className="card-container">
-        {clientes.map(cliente => (
-          <div key={cliente.id} className="card">
-            <button onClick={() => onDelete(cliente.id)} className="delete-btn">Eliminar</button>
-            <h4>{cliente.nombre}</h4>
-            <p><strong>RFC:</strong> {cliente.rfc}</p>
-            <p><strong>Dirección:</strong> {cliente.direccion}</p>
-            <p><strong>Contacto:</strong> {cliente.contactoPrincipal.nombre}</p>
-            <p><strong>Teléfono:</strong> {cliente.contactoPrincipal.telefono}</p>
-            <p><strong>Email:</strong> {cliente.contactoPrincipal.email}</p>
-          </div>
-        ))}
+        {clientes && clientes.length > 0 ? (
+          clientes.map(cliente => {
+            // Ensure contactoPrincipal exists for rendering to prevent crashes from old data
+            const safeCliente = {
+              ...cliente,
+              contactoPrincipal: cliente.contactoPrincipal || { nombre: '', telefono: '', email: '' }
+            };
+
+            return (
+              <div key={safeCliente.id} className="card">
+                <button onClick={() => onDelete(safeCliente.id)} className="delete-btn">Eliminar</button>
+                <h4>{safeCliente.nombre ?? 'Nombre no disponible'}</h4>
+                <p><strong>RFC:</strong> {safeCliente.rfc ?? 'N/A'}</p>
+                <p><strong>Dirección:</strong> {safeCliente.direccion ?? 'N/A'}</p>
+                <p><strong>Contacto:</strong> {safeCliente.contactoPrincipal.nombre ?? 'N/A'}</p>
+                <p><strong>Teléfono:</strong> {safeCliente.contactoPrincipal.telefono ?? 'N/A'}</p>
+                <p><strong>Email:</strong> {safeCliente.contactoPrincipal.email ?? 'N/A'}</p>
+              </div>
+            );
+          })
+        ) : (
+          <p className="no-results">No se encontraron clientes que coincidan con la búsqueda o el filtro aplicado.</p>
+        )}
       </div>
     </div>
   );

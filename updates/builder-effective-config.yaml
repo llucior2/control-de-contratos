@@ -1,0 +1,20 @@
+directories:
+  output: release
+  buildResources: assets
+publish:
+  provider: github
+  owner: llucior2
+  repo: control-de-contratos
+appId: com.ipemyc.controldecontratos
+productName: Control de Contratos
+files:
+  - filter:
+      - dist/**/*
+      - dist-server/**/*
+      - electron.cjs
+      - package.json
+win:
+  target: nsis
+mac:
+  target: dmg
+electronVersion: 31.7.7

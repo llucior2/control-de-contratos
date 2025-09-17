@@ -1,0 +1,50 @@
+.action-buttons-cell {
+  white-space: nowrap; /* Prevent buttons from wrapping */
+}
+
+.action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em; /* Adjust size as needed */
+  padding: 0 5px;
+  transition: color 0.2s ease-in-out;
+}
+
+.action-button.edit {
+  color: #007bff; /* Blue for edit */
+}
+
+.action-button.delete {
+  color: #dc3545; /* Red for delete */
+}
+
+.action-button:hover {
+  color: #0056b3; /* Darker blue on hover */
+}
+
+.action-button.delete:hover {
+  color: #c82333; /* Darker red on hover */
+}
+
+table th,
+table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table-container {
+  width: 100%; /* Ensure container takes full width */
+}
+
+.table-container table {
+  width: 100%; /* Make table take full width of its container */
+  border-collapse: collapse; /* For cleaner borders */
+  table-layout: auto; /* Distribute column widths evenly */
+}
+
+.table-container th,
+.table-container td {
+  padding: 4px; /* Add some padding for better aesthetics */
+  border: 1px solid #ddd; /* Add borders for better visual separation */
+}

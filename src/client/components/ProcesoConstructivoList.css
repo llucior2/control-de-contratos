@@ -1,0 +1,44 @@
+.proceso-list-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.proceso-list {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.proceso-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.proceso-item .item-nombre {
+  flex-grow: 1;
+}
+
+.proceso-item .item-porcentaje {
+  font-weight: 600;
+  margin-right: 15px;
+}
+
+.total-footer {
+  padding: 10px;
+  border-top: 2px solid #e2e8f0;
+  text-align: right;
+  font-size: 1.1em;
+}
+
+.total-footer.invalid {
+  background-color: #fff5f5;
+  color: #c53030;
+}
+
+.total-footer .error-message {
+  display: block;
+  font-size: 0.8em;
+  margin-top: 5px;
+}

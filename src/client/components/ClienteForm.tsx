@@ -17,15 +17,20 @@ const ClienteForm = ({ onClienteAdded, razonSocialId }: ClienteFormProps) => {
     }
     const newCliente = { nombre, rfc, contactoPrincipal: { nombre: '', telefono: '', email: '' }, razonSocialId };
     
-    await fetch('/api/clientes', {
+    const response = await fetch('/api/clientes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newCliente),
     });
 
-    setNombre('');
-    setRfc('');
-    onClienteAdded();
+    if (response.ok) {
+      setNombre('');
+      setRfc('');
+      onClienteAdded();
+    } else {
+      const errorData = await response.json();
+      alert(`Error: ${errorData.message || 'No se pudo agregar el cliente.'}`);
+    }
   };
 
   return (

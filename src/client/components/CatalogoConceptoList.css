@@ -1,0 +1,52 @@
+.concepto-list-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-actions {
+  margin-bottom: 15px;
+}
+
+.concepto-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.concepto-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.concepto-item:hover {
+  background-color: #f9f9f9;
+}
+
+.concepto-item.selected {
+  background-color: #eef2ff;
+  border-left: 3px solid #4f46e5;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.item-nombre {
+  font-weight: 600;
+}
+
+.item-disciplina {
+  font-size: 0.85em;
+  color: #666;
+}
+
+.item-actions button {
+  margin-left: 5px;
+}

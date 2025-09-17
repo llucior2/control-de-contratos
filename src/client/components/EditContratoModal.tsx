@@ -26,7 +26,7 @@ const EditContratoModal = ({ contrato, clientes, onClose, onSave }: EditContrato
     setFormData(contrato);
   }, [contrato]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     let parsedValue: string | number = value;
     if (name === 'clienteId' || name === 'monto' || name === 'tipoDeCambio' || name === 'anticipoPorcentaje' || name === 'fondoGarantiaPorcentaje') {
@@ -140,6 +140,14 @@ const EditContratoModal = ({ contrato, clientes, onClose, onSave }: EditContrato
             <div className="form-group" style={{gridColumn: '1 / -1'}}>
                 <label>Objeto del Contrato</label>
                 <input type="text" name="objeto" value={formData.objeto} onChange={handleChange} required />
+            </div>
+            <div className="form-group" style={{gridColumn: '1 / -1'}}>
+                <label>Fianza de Anticipo (Opcional)</label>
+                <input type="text" name="fianzaAnticipo" value={formData.fianzaAnticipo || ''} onChange={handleChange} placeholder="Ej. Folio de fianza, condiciones, etc." />
+            </div>
+            <div className="form-group" style={{gridColumn: '1 / -1'}}>
+                <label>Penalizaciones (Opcional)</label>
+                <textarea name="penalizaciones" value={formData.penalizaciones || ''} onChange={handleChange} placeholder="Ej. 1% por cada semana de retraso..."></textarea>
             </div>
             <div className="modal-actions">
                 <button type="submit" className="save-btn">Guardar Cambios</button>

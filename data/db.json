@@ -2,207 +2,201 @@
   "razonesSociales": [
     {
       "id": 1,
-      "nombre": "AAAAA",
-      "rfc": "ISNCINSID8"
+      "nombre": "TOP DRYWALL",
+      "rfc": "TRD"
     },
     {
       "id": 2,
-      "nombre": "BBBBBB",
-      "rfc": "DONVPSIIVNVE"
+      "nombre": "ACABADOS DN",
+      "rfc": "ADN"
     }
   ],
   "clientes": [
     {
-      "nombre": "Cliente 4",
-      "rfc": "a6as4da666",
-      "direccion": "calle 1",
-      "contactoPrincipal": {
-        "nombre": "yo 1",
-        "telefono": 12334445566,
-        "email": "lkj@hdfggr.com"
-      },
-      "id": 1
-    },
-    {
-      "nombre": "Cliente 5",
-      "rfc": "a6as4da667",
-      "direccion": "calle 2",
-      "contactoPrincipal": {
-        "nombre": "yo 2",
-        "telefono": 12334445567,
-        "email": "ldskj@hdfggr.com"
-      },
-      "id": 2
-    },
-    {
-      "nombre": "Cliente 6",
-      "rfc": "a6as4da668",
-      "direccion": "calle 3",
-      "contactoPrincipal": {
-        "nombre": "yo 3",
-        "telefono": 12334445568,
-        "email": "lkiwiij@hdfggr.com"
-      },
-      "id": 3
-    },
-    {
-      "nombre": "Cliente 7",
-      "rfc": "a6as4da669",
-      "direccion": "calle 4",
-      "contactoPrincipal": {
-        "nombre": "yo 4",
-        "telefono": 12334445569,
-        "email": "lsososj@hdfggr.com"
-      },
-      "id": 4
-    },
-    {
-      "nombre": "Cliente 8",
-      "rfc": "a6as4da670",
-      "direccion": "calle 5",
-      "contactoPrincipal": {
-        "nombre": "yo 5",
-        "telefono": 12334445570,
-        "email": "lppaos@hdfggr.com"
-      },
-      "id": 5
-    },
-    {
-      "nombre": "Cliente 9",
-      "rfc": "a6as4da671",
-      "direccion": "calle 6",
-      "contactoPrincipal": {
-        "nombre": "yo 6",
-        "telefono": 12334445571,
-        "email": "jjeniks@hdfggr.com"
-      },
-      "id": 6
-    },
-    {
-      "nombre": "Cliente 10",
-      "rfc": "a6as4da672",
-      "direccion": "calle 7",
-      "contactoPrincipal": {
-        "nombre": "yo 7",
-        "telefono": 12334445572,
-        "email": "ooeidjs@hdfggr.com"
-      },
-      "id": 7
-    },
-    {
-      "nombre": "Cliente 11",
-      "rfc": "a6as4da673",
-      "direccion": "calle 8",
-      "contactoPrincipal": {
-        "nombre": "yo 8",
-        "telefono": 12334445573,
-        "email": "qwjwjs@hdfggr.com"
-      },
-      "id": 8
-    }
-  ],
-  "contratos": [
-    {
-      "clienteId": 1,
-      "nombreProyecto": "Proyecto 1",
-      "folio": "CBS52211",
-      "objeto": "Pintura",
-      "monto": 88855446,
-      "moneda": "MXN",
-      "tipoDeCambio": 1,
-      "fechaInicio": "2025-09-01",
-      "fechaTermino": "2025-09-16",
-      "tipoContrato": "Precio Unitario",
-      "tipoIVA": "IVA 16%",
-      "anticipoPorcentaje": 30,
-      "fondoGarantiaPorcentaje": 5,
-      "estatus": "Vigente",
-      "id": 1
-    },
-    {
-      "clienteId": 6,
-      "nombreProyecto": "Proyecto 2",
-      "folio": "CBS52212",
-      "objeto": "Tablaroca",
-      "monto": 88855446,
-      "moneda": "MXN",
-      "tipoDeCambio": 1,
-      "fechaInicio": "2025-09-19",
-      "fechaTermino": "2025-10-10",
-      "tipoContrato": "Precio Unitario",
-      "tipoIVA": "IVA 16%",
-      "anticipoPorcentaje": 30,
-      "fondoGarantiaPorcentaje": 5,
-      "estatus": "Vigente",
-      "id": 2
-    },
-    {
-      "clienteId": 8,
-      "nombreProyecto": "Proyecto 3",
-      "folio": "CBS52213",
-      "objeto": "Tablaroca",
-      "monto": 88855447,
-      "moneda": "MXN",
-      "tipoDeCambio": 1,
-      "fechaInicio": "2025-07-28",
-      "fechaTermino": "2025-09-06",
-      "tipoContrato": "Precio Unitario",
-      "tipoIVA": "IVA 16%",
-      "anticipoPorcentaje": 30,
-      "fondoGarantiaPorcentaje": 5,
-      "estatus": "Vigente",
-      "id": 3
-    },
-    {
-      "clienteId": 2,
-      "nombreProyecto": "Proyecto 4",
-      "folio": "CBS52214",
-      "objeto": "Tablaroca",
-      "monto": 88855448,
-      "moneda": "MXN",
-      "tipoDeCambio": 1,
-      "fechaInicio": "2025-08-31",
-      "fechaTermino": "2025-09-11",
-      "tipoContrato": "Precio Unitario",
-      "tipoIVA": "IVA 16%",
-      "anticipoPorcentaje": 30,
-      "fondoGarantiaPorcentaje": 5,
-      "estatus": "Vencido",
-      "id": 4
-    },
-    {
-      "clienteId": 0,
-      "nombreProyecto": "Proyecto 5",
-      "folio": "CBS52215",
-      "objeto": "Tablaroca",
-      "monto": 88855449,
-      "moneda": "MXN",
-      "tipoDeCambio": 1,
-      "fechaInicio": "",
-      "fechaTermino": "",
-      "tipoContrato": "Precio Unitario",
-      "tipoIVA": "IVA 16%",
-      "anticipoPorcentaje": 30,
-      "fondoGarantiaPorcentaje": 5,
-      "estatus": "Vigente",
-      "id": 5
-    }
-  ],
-  "ordenesDeCambio": [],
-  "facturas": [
-    {
+      "nombre": "VCD INMOBILIARIA Y CONSTRUCCION, S.A.P.I. DE C.V.",
       "id": 1,
-      "contratoId": 1,
-      "folioFactura": "FA-2023-001",
-      "fechaEmision": "2025-09-13",
-      "concepto": "Estimación 01",
-      "importeEstimacion": "500000",
-      "amortizacionAnticipo": 0,
-      "fondoGarantia": 0,
-      "deductivaCargos": 0,
-      "estatus": "Pendiente",
-      "comentarios": ""
+      "razonSocialId": 1
+    },
+    {
+      "nombre": "TORRES COLONIA S.A. DE C.V.",
+      "id": 2,
+      "razonSocialId": 1
+    },
+    {
+      "nombre": "MVD 1994 REAL ESTATE CONSTRUCTION, S.R.L. ED C.V.",
+      "id": 3,
+      "razonSocialId": 1
+    },
+    {
+      "nombre": "M&A GROUP CONSTRUCCIONES, S.A. DE C.V.",
+      "id": 4,
+      "razonSocialId": 1
+    },
+    {
+      "nombre": "DAVISA DESARROLLOS RESIDENCIALES, S.A. DE C.V.",
+      "id": 5,
+      "razonSocialId": 1
+    },
+    {
+      "nombre": "YOUNCHANG MEXICO S. DE R.L. DE C.V.",
+      "id": 6,
+      "razonSocialId": 1
+    },
+    {
+      "nombre": "ADMINISTRACION PLAZA SANTA CATARINA, A.C.",
+      "id": 7,
+      "razonSocialId": 1
+    },
+    {
+      "nombre": "HYA DE MEXICO DE B.C., S.A. DE C.V.",
+      "id": 8,
+      "razonSocialId": 1
+    },
+    {
+      "nombre": "STELLA BOREAL, S.A. DE C.V.",
+      "id": 9,
+      "razonSocialId": 1
+    },
+    {
+      "nombre": "BANCO ACTINVER, S.A, INSTITUCION DE BANCA MULTIPLE, GRUPO FINANCIERO ACTINVER",
+      "id": 10,
+      "razonSocialId": 1
+    },
+    {
+      "nombre": "ADMINISTRACIÓN DEL RIO, A.C.",
+      "id": 11,
+      "razonSocialId": 1
+    },
+    {
+      "nombre": "FOMENTO EDUCATIVO Y CULTURAL FRANCISCO DE IBARRA",
+      "id": 12,
+      "razonSocialId": 1
+    },
+    {
+      "nombre": "HYA DE MEXICO DE B.C., S.A. DE C.V",
+      "id": 13,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "GRUPO 210, S.A. DE C.V.",
+      "id": 14,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "GRUPO DAGS, S.A. DE C.V.",
+      "id": 15,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "URBAMONT S.A. DE C.V.",
+      "id": 16,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "CONSTRUCTORA GARZA PONCE, S.A. DE C.V.",
+      "id": 17,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "ALTIO CAPITAL",
+      "id": 18,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "VEME CASAS, S.A. DE C.V.",
+      "id": 19,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "PROMOTORA GOMO S.A. DE C.V. - CIMA",
+      "id": 20,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "SERVICIOS HOSPITALARIOS DEL MAYAB, S.A. DE C.V.",
+      "id": 21,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "OFIS DESIGN S.A. DE C.V.",
+      "id": 22,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "INMOBILIARIA BH SANTA MARÍA, S. A. DE C. V.",
+      "id": 23,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "PLATE DIRECCIÓN DE PROYECTOS Y CONSTRUCCIÓN",
+      "id": 24,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "CONSTRUCTORA Y EDIFICADORA GIA+A, S.A. DE C.V.",
+      "id": 25,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "INMUEBLES PASEO SAN PEDRO, S.A. DE C.V.",
+      "id": 26,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "C I BANCO, SOCIEDAD ANÓNIMA, INSTITUCIÓN DE BANCA MULTIPLE",
+      "id": 27,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "SANTA CATARINA DEL PONIENTE SA DE CV",
+      "id": 28,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "CONSTRUCTORA GARZA PONCE S.A. DE C.V.",
+      "id": 29,
+      "razonSocialId": 2
+    },
+    {
+      "nombre": "MAIZ EDIFICACIONES S.A. DE C.V",
+      "id": 30,
+      "razonSocialId": 2
+    },
+    {
+      "id": 31,
+      "razonSocialId": 2,
+      "nombre": "VCD INMOBILIARIA Y CONSTRUCCION, S.A.P.I. DE C.V.",
+      "rfc": "",
+      "direccion": "",
+      "contactoPrincipal": {
+        "nombre": "",
+        "telefono": "",
+        "email": ""
+      }
+    },
+    {
+      "id": 32,
+      "razonSocialId": 2,
+      "nombre": "STELLA BOREAL, S.A. DE C.V.",
+      "contactoPrincipal": {
+        "nombre": "",
+        "telefono": "",
+        "email": ""
+      }
+    },
+    {
+      "id": 33,
+      "razonSocialId": 2,
+      "nombre": "MVD 1994 REAL ESTATE CONSTRUCTION, S.R.L. ED C.V.",
+      "contactoPrincipal": {
+        "nombre": "",
+        "telefono": "",
+        "email": ""
+      }
     }
   ],
+  "contratos": [],
+  "ordenesDeCambio": [],
+  "facturas": [],
   "pagos": []
 }

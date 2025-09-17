@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Cliente, TipoContrato } from '../../types';
+import { useState, useEffect, useMemo } from 'react';
+import { Cliente, RazonSocial, TipoContrato } from '../../types';
 
 const tipoContratoOptions: TipoContrato[] = [
   'Precio Unitario',
@@ -13,13 +13,12 @@ const tipoContratoOptions: TipoContrato[] = [
 
 interface ContratoFormProps {
   clientes: Cliente[];
+  razonesSociales: RazonSocial[];
   onContratoAdded: () => void;
-  razonSocialId: number | null; // New prop
 }
 
-const ContratoForm = ({ clientes, onContratoAdded, razonSocialId }: ContratoFormProps) => {
-  // State for all form fields
-  const [clienteId, setClienteId] = useState<number | string>('');
+const ContratoForm = ({ clientes, razonesSociales, onContratoAdded }: ContratoFormProps) => {
+  // Form fields state
   const [nombreProyecto, setNombreProyecto] = useState('');
   const [folio, setFolio] = useState('');
   const [objeto, setObjeto] = useState('');
@@ -33,6 +32,36 @@ const ContratoForm = ({ clientes, onContratoAdded, razonSocialId }: ContratoForm
   const [anticipoPorcentaje, setAnticipoPorcentaje] = useState<number | string>(0);
   const [fondoGarantiaPorcentaje, setFondoGarantiaPorcentaje] = useState<number | string>(5);
   const [estatus, setEstatus] = useState<'Vigente' | 'Vencido' | 'Cancelado'>('Vigente');
+  const [fianzaAnticipo, setFianzaAnticipo] = useState('');
+  const [penalizaciones, setPenalizaciones] = useState('');
+
+  // New state for client and RS selection logic
+  const [selectedClienteName, setSelectedClienteName] = useState<string>('');
+  const [associatedRazonesSociales, setAssociatedRazonesSociales] = useState<RazonSocial[]>([]);
+  const [selectedRazonSocialId, setSelectedRazonSocialId] = useState<string>('');
+
+  const uniqueClientNames = useMemo(() => {
+    const names = new Set(clientes.map(c => c.nombre));
+    return Array.from(names);
+  }, [clientes]);
+
+  useEffect(() => {
+    if (selectedClienteName) {
+      const clientsWithName = clientes.filter(c => c.nombre === selectedClienteName);
+      const rsIds = new Set(clientsWithName.map(c => c.razonSocialId));
+      const associatedRS = razonesSociales.filter(rs => rsIds.has(rs.id));
+      setAssociatedRazonesSociales(associatedRS);
+    } else {
+      setAssociatedRazonesSociales([]);
+    }
+    setSelectedRazonSocialId('');
+  }, [selectedClienteName, clientes, razonesSociales]);
+
+  useEffect(() => {
+    if (associatedRazonesSociales.length === 1) {
+      setSelectedRazonSocialId(String(associatedRazonesSociales[0].id));
+    }
+  }, [associatedRazonesSociales]);
 
   const montoTotalConIVA = useMemo(() => {
     if (!monto || tipoIVA !== 'IVA 16%') return Number(monto);
@@ -42,8 +71,14 @@ const ContratoForm = ({ clientes, onContratoAdded, razonSocialId }: ContratoForm
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!razonSocialId) {
-      alert('Debe seleccionar una Razón Social para agregar un contrato.');
+    if (!selectedClienteName || !selectedRazonSocialId) {
+      alert('Debe seleccionar un cliente y una razón social.');
+      return;
+    }
+
+    const cliente = clientes.find(c => c.nombre === selectedClienteName && c.razonSocialId === Number(selectedRazonSocialId));
+    if (!cliente) {
+      alert('Error: No se pudo encontrar el cliente seleccionado.');
       return;
     }
 
@@ -53,17 +88,19 @@ const ContratoForm = ({ clientes, onContratoAdded, razonSocialId }: ContratoForm
     }
 
     const newContrato = {
-      clienteId: Number(clienteId),
-      razonSocialId, // Added razonSocialId
+      clienteId: cliente.id,
+      razonSocialId: Number(selectedRazonSocialId),
       nombreProyecto, folio, objeto,
       monto: parseFloat(String(monto)) || 0,
-      moneda, 
+      moneda,
       tipoDeCambio: moneda === 'USD' ? parseFloat(String(tipoDeCambio)) || 0 : undefined,
       fechaInicio, fechaTermino, tipoContrato, tipoIVA,
       anticipoPorcentaje: parseFloat(String(anticipoPorcentaje)) || 0,
       fondoGarantiaPorcentaje: parseFloat(String(fondoGarantiaPorcentaje)) || 0,
       montoAnticipoOtorgado: ((parseFloat(String(monto)) || 0) * ((parseFloat(String(anticipoPorcentaje)) || 0) / 100)),
       estatus,
+      fianzaAnticipo,
+      penalizaciones,
     };
 
     await fetch('/api/contratos', {
@@ -71,22 +108,6 @@ const ContratoForm = ({ clientes, onContratoAdded, razonSocialId }: ContratoForm
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newContrato),
     });
-
-    // Reset form could be more comprehensive
-    setClienteId('');
-    setNombreProyecto('');
-    setFolio('');
-    setObjeto('');
-    setMonto('');
-    setMoneda('MXN');
-    setTipoDeCambio('');
-    setFechaInicio('');
-    setFechaTermino('');
-    setTipoContrato('Precio Unitario');
-    setTipoIVA('IVA 16%');
-    setAnticipoPorcentaje(0);
-    setFondoGarantiaPorcentaje(5);
-    setEstatus('Vigente');
 
     onContratoAdded();
   };
@@ -96,11 +117,27 @@ const ContratoForm = ({ clientes, onContratoAdded, razonSocialId }: ContratoForm
       {/* Row 1 */}
       <div className="form-group">
         <label>Cliente</label>
-        <select value={clienteId} onChange={(e) => setClienteId(e.target.value)} required>
+        <select value={selectedClienteName} onChange={(e) => setSelectedClienteName(e.target.value)} required>
           <option value="" disabled>Seleccione un cliente</option>
-          {clientes.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+          {uniqueClientNames.map(name => <option key={name} value={name}>{name}</option>)}
         </select>
       </div>
+
+      {associatedRazonesSociales.length > 0 && (
+        <div className="form-group">
+          <label>Razón Social</label>
+          <select
+            value={selectedRazonSocialId}
+            onChange={(e) => setSelectedRazonSocialId(e.target.value)}
+            required
+            disabled={associatedRazonesSociales.length === 1}
+          >
+            <option value="" disabled>Seleccione una Razón Social</option>
+            {associatedRazonesSociales.map(rs => <option key={rs.id} value={rs.id}>{rs.nombre}</option>)}
+          </select>
+        </div>
+      )}
+
       <div className="form-group">
         <label>Nombre del Proyecto</label>
         <input type="text" value={nombreProyecto} onChange={(e) => setNombreProyecto(e.target.value)} required />
@@ -177,11 +214,22 @@ const ContratoForm = ({ clientes, onContratoAdded, razonSocialId }: ContratoForm
           <input type="text" readOnly value={`$${montoTotalConIVA.toLocaleString()}`} style={{backgroundColor: '#eee'}} />
       </div>
 
-      {/* Final Row */}
+      {/* Row 6 */}
       <div className="form-group" style={{gridColumn: '1 / -1'}}>
         <label>Objeto del Contrato</label>
         <input type="text" value={objeto} onChange={(e) => setObjeto(e.target.value)} required />
       </div>
+
+      {/* Row 7: Fianzas y Penalizaciones */}
+      <div className="form-group" style={{gridColumn: '1 / -1'}}>
+        <label>Fianza de Anticipo (Opcional)</label>
+        <input type="text" value={fianzaAnticipo} onChange={(e) => setFianzaAnticipo(e.target.value)} placeholder="Ej. Folio de fianza, condiciones, etc." />
+      </div>
+      <div className="form-group" style={{gridColumn: '1 / -1'}}>
+        <label>Penalizaciones (Opcional)</label>
+        <textarea value={penalizaciones} onChange={(e) => setPenalizaciones(e.target.value)} placeholder="Ej. 1% por cada semana de retraso..."></textarea>
+      </div>
+
       <button type="submit">Agregar Contrato</button>
     </form>
   );

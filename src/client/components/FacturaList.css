@@ -1,0 +1,30 @@
+.pago-list-container {
+    padding: 20px;
+}
+
+.pago-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.pago-table th, .pago-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.pago-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.pago-table tr:nth-child(even) {background-color: #f9f9f9;}
+
+.pago-table tr:hover {background-color: #ddd;}
+
+.no-results {
+    margin-top: 20px;
+    font-style: italic;
+    color: #888;
+}
